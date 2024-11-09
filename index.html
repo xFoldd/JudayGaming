@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Permainan Tebak Angka</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Permainan Tebak Angka Paling Gacor</h1>
+        <p>Masukkan angka pilihan Anda (1-10):</p>
+        <input type="number" id="userInput" min="1" max="10" placeholder="1 - 10">
+        
+        <p>Masukkan jumlah taruhan (Rp):</p>
+        <input type="number" id="betAmount" min="1" placeholder="Jumlah Rupiah">
+
+        <button onclick="tebakAngkaDenganPengaturan()">Tebak Angka</button>
+
+        <p id="result"></p>
+        <p id="balanceDisplay">Saldo Anda: Rp <span id="balance">100000</span></p>
+    </div>
+
+    <script>
+        let saldo = 100000; // Saldo awal pemain
+
+        function tebakAngkaDenganPengaturan() {
+            const peluangMenang = 0.3; // Peluang kemenangan yang diatur (30%)
+            const userChoice = parseInt(document.getElementById("userInput").value);
+            const betAmount = parseInt(document.getElementById("betAmount").value);
+            const resultElement = document.getElementById("result");
+            const balanceElement = document.getElementById("balance");
+
+            // Validasi input angka dan taruhan
+            if (isNaN(userChoice) || userChoice < 1 || userChoice > 10) {
+                resultElement.innerText = "Masukkan angka yang valid antara 1 hingga 10.";
+                return;
+            }
+            if (isNaN(betAmount) || betAmount < 1) {
+                resultElement.innerText = "Masukkan jumlah taruhan yang valid.";
+                return;
+            }
+            if (betAmount > saldo) {
+                resultElement.innerText = "Saldo Anda tidak mencukupi untuk taruhan ini.";
+                return;
+            }
+
+            // Sistem menentukan apakah pemain menang atau kalah
+            const isMenang = Math.random() < peluangMenang;
+
+            if (isMenang) {
+                saldo += betAmount; // Jika menang, saldo bertambah (taruhan x2)
+                resultElement.innerText = `Selamat! Anda menang! Sistem juga memilih angka ${userChoice}. Anda mendapatkan Rp ${betAmount * 2}.`;
+            } else {
+                saldo -= betAmount; // Jika kalah, saldo berkurang (taruhan hangus)
+                let systemChoice;
+                do {
+                    systemChoice = Math.floor(Math.random() * 10) + 1;
+                } while (systemChoice === userChoice);
+
+                resultElement.innerText = `Maaf, Anda kalah. Sistem memilih angka ${systemChoice}. Anda kehilangan Rp ${betAmount}.`;
+            }
+
+            balanceElement.innerText = saldo; // Update tampilan saldo
+
+            // Cek apakah saldo habis
+            if (saldo <= 0) {
+                resultElement.innerText = "Mampus miskin anjg";
+                document.querySelector("button").disabled = true; // Nonaktifkan tombol jika saldo habis
+            }
+        }
+    </script>
+</body>
+</html>
